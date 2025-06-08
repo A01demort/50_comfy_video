@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.6.1-cudnn8-runtime-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_CACHE_DIR=/workspace/.cache/pip
@@ -33,9 +33,9 @@ RUN mkdir -p /workspace && chmod -R 777 /workspace && \
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 
-# 의존성 설치
-RUN pip install -r requirements.txt && \
-    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu126
+# 의존성 설치 (PyTorch 먼저 설치 후 requirements)
+RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 && \
+    pip install -r requirements.txt
 
 # Node.js 18 설치 (기존 nodejs 제거 후)
 RUN apt-get remove -y nodejs npm && \
@@ -55,7 +55,6 @@ c.NotebookApp.token = ''\n\
 c.NotebookApp.password = ''\n\
 c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
 > /root/.jupyter/jupyter_notebook_config.py
-
 
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
@@ -81,7 +80,7 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
     git clone https://github.com/ssitu/ComfyUI_UltimateSDUpscale.git || echo '⚠️ Upscale 실패' && \
     git clone https://github.com/risunobushi/comfyUI_FrequencySeparation_RGB-HSV.git || echo '⚠️ Frequency 실패' && \
     git clone https://github.com/silveroxides/ComfyUI_bnb_nf4_fp4_Loaders.git || echo '⚠️ NF4 노드 실패' && \
-    git clone https://github.com/kijai/ComfyUI-FramePackWrapper.git || echo '⚠️ FramePackWrapper 실패' && \ 
+    git clone https://github.com/kijai/ComfyUI-FramePackWrapper.git || echo '⚠️ FramePackWrapper 실패' && \
     \
     echo '📦 segment-anything 설치' && \
     git clone https://github.com/facebookresearch/segment-anything.git /workspace/segment-anything || echo '⚠️ segment-anything 실패' && \
@@ -103,9 +102,8 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
     pip install timm || echo '⚠️ timm 실패' && \
     pip install ultralytics || echo '⚠️ ultralytics 실패' && \
     pip install ftfy || echo '⚠️ ftfy 실패' && \
-    pip install bitsandbytes xformers || echo '⚠️ bitsandbytes 또는 xformers 설치 실패' && \
+    pip install bitsandbytes==0.41.1 xformers || echo '⚠️ bitsandbytes 또는 xformers 설치 실패' && \
     pip install sageattention || echo '⚠️ sageattention 설치 실패'
-
 
 # A1 폴더 생성 후 자동 커스텀 노드 설치 스크립트 복사
 RUN mkdir -p /workspace/A1
@@ -119,7 +117,6 @@ RUN chmod +x /workspace/A1/Hugging_down_a1.sh
 # Framepack_down.sh 스크립트 복사 및 실행 권한 설정
 COPY Framepack_down.sh /workspace/A1/Framepack_down.sh
 RUN chmod +x /workspace/A1/Framepack_down.sh
-
 
 # 볼륨 마운트
 VOLUME ["/workspace"]
