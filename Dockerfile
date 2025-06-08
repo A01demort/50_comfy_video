@@ -35,7 +35,7 @@ WORKDIR /workspace/ComfyUI
 
 # 의존성 설치
 RUN pip install -r requirements.txt && \
-    pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --extra-index-url https://download.pytorch.org/whl/cu126
+    pip install torch==2.7.1 torchvision==0.22.1+cu126 torchaudio==2.7.1+cu126 --extra-index-url https://download.pytorch.org/whl/cu126
 
 # Node.js 18 설치 (기존 nodejs 제거 후)
 RUN apt-get remove -y nodejs npm && \
@@ -53,7 +53,8 @@ RUN mkdir -p /root/.jupyter && \
     c.NotebookApp.open_browser = False\n\
     c.NotebookApp.token = ''\n\
     c.NotebookApp.password = ''\n\
-    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" > /root/.jupyter/jupyter_notebook_config.py
+    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
+    > /root/.jupyter/jupyter_notebook_config.py
 
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
@@ -87,18 +88,14 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
     mkdir -p /workspace/ComfyUI/models/insightface && \
     wget -O /workspace/ComfyUI/models/insightface/inswapper_128.onnx https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx || echo '⚠️ ONNX 다운로드 실패' && \
     echo '📦 파이썬 패키지 설치' && \
-    pip install --no-cache-dir GitPython onnx onnxruntime opencv-python-headless tqdm requests \
-        scikit-image piexif packaging transformers==4.36.2 accelerate peft==0.6.2 sentencepiece \
-        protobuf scipy einops pandas matplotlib imageio[ffmpeg] pyzbar pillow numba \
-        gguf diffusers==0.21.4 insightface dill || echo '⚠️ 일부 pip 설치 실패' && \
-    pip install facelib==0.2.2 mtcnn==0.1.1 || echo '⚠️ facelib 실패' && \
-    pip install facexlib basicsr gfpgan realesrgan || echo '⚠️ facexlib 실패' && \
-    pip install timm || echo '⚠️ timm 실패' && \
-    pip install ultralytics || echo '⚠️ ultralytics 실패' && \
-    pip install ftfy || echo '⚠️ ftfy 실패' && \
-    pip install bitsandbytes xformers || echo '⚠️ bitsandbytes 또는 xformers 설치 실패' && \
-    pip install sageattention || echo '⚠️ sageattention 설치 실패' && \
-    ln -s /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda12x.so /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda126.so || echo '⚠️ bitsandbytes 링크 실패'
+    pip install --no-cache-dir \
+        GitPython onnx onnxruntime opencv-python-headless tqdm requests \
+        scikit-image piexif packaging protobuf scipy einops pandas matplotlib imageio[ffmpeg] pyzbar pillow numba \
+        gguf dill insightface ftfy ultralytics timm \
+        facelib==0.2.2 mtcnn==0.1.1 facexlib basicsr gfpgan realesrgan \
+        diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 bitsandbytes==0.42.0.post2 xformers sageattention || echo '⚠️ 일부 pip 설치 실패' && \
+    ln -s /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda121.so /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda126.so || true && \
+    echo '{ "ffmpeg_bin_path": "/usr/bin/ffmpeg" }' > /workspace/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json || true
 
 # A1 폴더 생성 후 자동 커스텀 노드 설치 스크립트 복사
 RUN mkdir -p /workspace/A1
