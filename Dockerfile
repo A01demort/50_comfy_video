@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.6.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.5.0-cudnn8-runtime-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_CACHE_DIR=/workspace/.cache/pip
