@@ -1,5 +1,4 @@
-FROM nvidia/cuda:12.2.2-cudnn8-runtime-ubuntu20.04
-
+FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_CACHE_DIR=/workspace/.cache/pip
@@ -34,9 +33,9 @@ RUN mkdir -p /workspace && chmod -R 777 /workspace && \
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 
-# 의존성 설치 (PyTorch 먼저 설치 후 requirements)
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu126 && \
-    pip install -r requirements.txt
+# 의존성 설치
+RUN pip install -r requirements.txt && \
+    pip install torch==2.7.1 torchvision==0.22.1 torchaudio==2.7.1 --extra-index-url https://download.pytorch.org/whl/cu126
 
 # Node.js 18 설치 (기존 nodejs 제거 후)
 RUN apt-get remove -y nodejs npm && \
@@ -50,12 +49,11 @@ RUN pip install --force-reinstall jupyterlab==3.6.6 jupyter-server==1.23.6
 # Jupyter 설정파일 보완
 RUN mkdir -p /root/.jupyter && \
     echo "c.NotebookApp.allow_origin = '*'\n\
-c.NotebookApp.ip = '0.0.0.0'\n\
-c.NotebookApp.open_browser = False\n\
-c.NotebookApp.token = ''\n\
-c.NotebookApp.password = ''\n\
-c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
-> /root/.jupyter/jupyter_notebook_config.py
+    c.NotebookApp.ip = '0.0.0.0'\n\
+    c.NotebookApp.open_browser = False\n\
+    c.NotebookApp.token = ''\n\
+    c.NotebookApp.password = ''\n\
+    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" > /root/.jupyter/jupyter_notebook_config.py
 
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
@@ -82,29 +80,25 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
     git clone https://github.com/risunobushi/comfyUI_FrequencySeparation_RGB-HSV.git || echo '⚠️ Frequency 실패' && \
     git clone https://github.com/silveroxides/ComfyUI_bnb_nf4_fp4_Loaders.git || echo '⚠️ NF4 노드 실패' && \
     git clone https://github.com/kijai/ComfyUI-FramePackWrapper.git || echo '⚠️ FramePackWrapper 실패' && \
-    \
     echo '📦 segment-anything 설치' && \
     git clone https://github.com/facebookresearch/segment-anything.git /workspace/segment-anything || echo '⚠️ segment-anything 실패' && \
     pip install -e /workspace/segment-anything || echo '⚠️ segment-anything pip 설치 실패' && \
-    \
     echo '📦 ReActor ONNX 모델 설치' && \
     mkdir -p /workspace/ComfyUI/models/insightface && \
-    wget -O /workspace/ComfyUI/models/insightface/inswapper_128.onnx \
-    https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx || echo '⚠️ ONNX 다운로드 실패' && \
-    \
+    wget -O /workspace/ComfyUI/models/insightface/inswapper_128.onnx https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx || echo '⚠️ ONNX 다운로드 실패' && \
     echo '📦 파이썬 패키지 설치' && \
-    pip install --no-cache-dir \
-        GitPython onnx onnxruntime opencv-python-headless tqdm requests \
-        scikit-image piexif packaging transformers accelerate peft sentencepiece \
+    pip install --no-cache-dir GitPython onnx onnxruntime opencv-python-headless tqdm requests \
+        scikit-image piexif packaging transformers==4.36.2 accelerate peft==0.6.2 sentencepiece \
         protobuf scipy einops pandas matplotlib imageio[ffmpeg] pyzbar pillow numba \
-        gguf diffusers insightface dill || echo '⚠️ 일부 pip 설치 실패' && \
+        gguf diffusers==0.21.4 insightface dill || echo '⚠️ 일부 pip 설치 실패' && \
     pip install facelib==0.2.2 mtcnn==0.1.1 || echo '⚠️ facelib 실패' && \
     pip install facexlib basicsr gfpgan realesrgan || echo '⚠️ facexlib 실패' && \
     pip install timm || echo '⚠️ timm 실패' && \
     pip install ultralytics || echo '⚠️ ultralytics 실패' && \
     pip install ftfy || echo '⚠️ ftfy 실패' && \
-    pip install bitsandbytes==0.41.1 xformers || echo '⚠️ bitsandbytes 또는 xformers 설치 실패' && \
-    pip install sageattention || echo '⚠️ sageattention 설치 실패'
+    pip install bitsandbytes xformers || echo '⚠️ bitsandbytes 또는 xformers 설치 실패' && \
+    pip install sageattention || echo '⚠️ sageattention 설치 실패' && \
+    ln -s /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda12x.so /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda126.so || echo '⚠️ bitsandbytes 링크 실패'
 
 # A1 폴더 생성 후 자동 커스텀 노드 설치 스크립트 복사
 RUN mkdir -p /workspace/A1
