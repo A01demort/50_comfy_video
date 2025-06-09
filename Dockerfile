@@ -96,7 +96,8 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
         facelib==0.2.2 mtcnn==0.1.1 facexlib basicsr gfpgan realesrgan \
         diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 bitsandbytes==0.42.0.post2 xformers || echo '⚠️ 일부 pip 설치 실패' && \
     echo '📦 sageattention 1.0.6 설치 중...' && \
-    pip install sageattention==1.0.6 || echo '⚠️ sageattention 설치 실패' && \
+    pip install sageattention==1.0.6 || echo '⚠️ sageattention 설치 실패'
+
 
 # A1 폴더 생성 후 자동 커스텀 노드 설치 스크립트 복사
 RUN mkdir -p /workspace/A1
