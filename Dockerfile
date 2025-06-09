@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.8.0-cudnn9-runtime-ubuntu20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_CACHE_DIR=/workspace/.cache/pip
@@ -33,10 +33,11 @@ RUN mkdir -p /workspace && chmod -R 777 /workspace && \
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 
-# 의존성 설치
+# ✅ 수정: cu128 Nightly 버전 (sm_120 커널 포함됨)
 RUN pip install -r requirements.txt && \
-    pip install torch==2.7.1 torchvision==0.22.1+cu126 torchaudio==2.7.1+cu126 --extra-index-url https://download.pytorch.org/whl/cu126
+    pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
+    
 # Node.js 18 설치 (기존 nodejs 제거 후)
 RUN apt-get remove -y nodejs npm && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
