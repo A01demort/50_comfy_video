@@ -91,7 +91,7 @@ RUN pip install --no-cache-dir \
     gguf dill insightface ftfy ultralytics timm==0.9.2 \
     mtcnn==0.1.1 facexlib basicsr gfpgan realesrgan \
     diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 \
-    bitsandbytes==0.42.0.post2 xformers sageattention
+    bitsandbytes==0.42.0 xformers sageattention
 
 # facelib 깃허브에서 직접 설치
 RUN git clone https://github.com/serengil/facelib.git /tmp/facelib && \
