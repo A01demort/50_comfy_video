@@ -53,8 +53,10 @@ RUN mkdir -p /root/.jupyter && \
     c.NotebookApp.open_browser = False\n\
     c.NotebookApp.token = ''\n\
     c.NotebookApp.password = ''\n\
-    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
+    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}\n\
+    c.ServerApp.serve_extensions = True" \
     > /root/.jupyter/jupyter_notebook_config.py
+
 
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
