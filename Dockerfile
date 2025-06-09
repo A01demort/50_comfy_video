@@ -56,6 +56,7 @@ c.NotebookApp.password = ''\n\
 c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
 > /root/.jupyter/jupyter_notebook_config.py
 
+
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
     mkdir -p /workspace/ComfyUI/custom_nodes && \
@@ -96,10 +97,6 @@ RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
         diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 bitsandbytes==0.42.0.post2 xformers sageattention || echo '⚠️ 일부 pip 설치 실패' && \
     ln -s /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda121.so /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda126.so || true && \
     echo '{ "ffmpeg_bin_path": "/usr/bin/ffmpeg" }' > /workspace/ComfyUI/custom_nodes/was-node-suite-comfyui/was_suite_config.json || true
-
-# 🔄 커스텀 노드 백업 + 마커 디렉토리 생성
-RUN mkdir -p /opt/backup_nodes /opt/comfy_node_markers && \
-    cp -r /workspace/ComfyUI/custom_nodes/* /opt/backup_nodes/
 
 # A1 폴더 생성 후 자동 커스텀 노드 설치 스크립트 복사
 RUN mkdir -p /workspace/A1
