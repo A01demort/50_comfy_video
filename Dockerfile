@@ -49,12 +49,13 @@ RUN pip install --force-reinstall jupyterlab==3.6.6 jupyter-server==1.23.6
 # Jupyter 설정파일 보완
 RUN mkdir -p /root/.jupyter && \
     echo "c.NotebookApp.allow_origin = '*'\n\
-    c.NotebookApp.ip = '0.0.0.0'\n\
-    c.NotebookApp.open_browser = False\n\
-    c.NotebookApp.token = ''\n\
-    c.NotebookApp.password = ''\n\
-    c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
-    > /root/.jupyter/jupyter_notebook_config.py
+c.NotebookApp.ip = '0.0.0.0'\n\
+c.NotebookApp.open_browser = False\n\
+c.NotebookApp.token = ''\n\
+c.NotebookApp.password = ''\n\
+c.NotebookApp.terminado_settings = {'shell_command': ['/bin/bash']}" \
+> /root/.jupyter/jupyter_notebook_config.py
+
 
 # 커스텀 노드 및 의존성 설치 통합
 RUN echo '📁 커스텀 노드 및 의존성 설치 시작' && \
@@ -120,7 +121,6 @@ EXPOSE 8888
 # 실행 명령어
 CMD bash -c "\
 echo '🌀 A1(AI는 에이원) : https://www.youtube.com/@A01demort' && \
-rm -rf /root/.local/share/jupyter/lab && \
 jupyter lab --ip=0.0.0.0 --port=8888 --allow-root \
 --ServerApp.root_dir=/workspace \
 --ServerApp.token='' --ServerApp.password='' & \
