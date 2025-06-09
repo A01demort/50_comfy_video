@@ -84,13 +84,19 @@ RUN git clone https://github.com/facebookresearch/segment-anything.git /workspac
     mkdir -p /workspace/ComfyUI/models/insightface && \
     wget -O /workspace/ComfyUI/models/insightface/inswapper_128.onnx https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx
 
-# Python 패키지 추가 설치
+# Python 패키지 추가 설치 (호환 버전 지정 + facelib 깃허브)
 RUN pip install --no-cache-dir \
     GitPython onnx onnxruntime opencv-python-headless tqdm requests \
     scikit-image piexif packaging protobuf scipy einops pandas matplotlib imageio[ffmpeg] pyzbar pillow numba \
-    gguf dill insightface ftfy ultralytics timm \
-    facelib==0.2.2 mtcnn==0.1.1 facexlib basicsr gfpgan realesrgan \
-    diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 bitsandbytes==0.42.0.post2 xformers sageattention
+    gguf dill insightface ftfy ultralytics timm==0.9.2 \
+    mtcnn==0.1.1 facexlib basicsr gfpgan realesrgan \
+    diffusers==0.24.0 transformers==4.39.3 huggingface_hub==0.20.3 peft==0.7.1 \
+    bitsandbytes==0.42.0.post2 xformers sageattention
+
+# facelib 깃허브에서 직접 설치
+RUN git clone https://github.com/serengil/facelib.git /tmp/facelib && \
+    pip install /tmp/facelib && rm -rf /tmp/facelib
+
 
 # bitsandbytes CUDA 링크 수동 연결
 RUN ln -s /usr/local/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda12x/libbitsandbytes_cuda121.so \
