@@ -37,7 +37,7 @@ WORKDIR /workspace/ComfyUI
 
 # ✅ 수정: Pytorch 2.8로 세팅
 RUN pip install -r requirements.txt && \
-    pip install --pre torch==2.8.0 torchvision==0.17.0 torchaudio==2.8.0 --extra-index-url https://download.pytorch.org/whl/nightly/cu128
+    pip install --pre torch==2.8.0 torchvision==0.17.0 --extra-index-url https://download.pytorch.org/whl/nightly/cu128
 
 
 # Node.js 18 설치 (기존 nodejs 제거 후)
