@@ -35,12 +35,14 @@ RUN mkdir -p /workspace && chmod -R 777 /workspace && \
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 
-# ✅ 수정: cu128 Nightly 버전 (sm_120 커널 포함됨)
-# 먼저 cu128 PyTorch 설치
+# ✅ 이 파트가 가장 중요 (5090에서) PyTorch (cu128) 먼저 설치
 RUN pip install --upgrade --force-reinstall --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
-# 그 다음 requirements.txt 설치하되, torch 관련은 무시
-RUN pip install -r requirements.txt --no-deps
+# 나머지 requirements.txt (torch 제외) 설치
+RUN pip install -r /workspace/ComfyUI/requirements.txt --no-deps
+
+# 추가로 빠질 수 있는 필수 모듈 한 번에 설치 (✅ 이 파트가 가장 중요 )
+RUN pip install trampoline multidict propcache aiohappyeyeballs aiosignal async-timeout frozenlist mako
 
 
 # Node.js 18 설치 (기존 nodejs 제거 후)
