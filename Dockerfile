@@ -36,10 +36,13 @@ RUN git clone https://github.com/comfyanonymous/ComfyUI.git /workspace/ComfyUI
 WORKDIR /workspace/ComfyUI
 
 # ✅ 수정: cu128 Nightly 버전 (sm_120 커널 포함됨)
-RUN pip install -r requirements.txt && \
-    pip install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+# 먼저 cu128 PyTorch 설치
+RUN pip install --upgrade --force-reinstall --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
 
-    
+# 그 다음 requirements.txt 설치하되, torch 관련은 무시
+RUN pip install -r requirements.txt --no-deps
+
+
 # Node.js 18 설치 (기존 nodejs 제거 후)
 RUN apt-get remove -y nodejs npm && \
     curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
